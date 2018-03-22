@@ -22,6 +22,7 @@ void connected(Graph* graph, int v1, int v2){ //ket noi cac mang tau
   (*graph).matrix[v1][v2] =1;
   (*graph).matrix[v2][v1] =1;
   printf("Da ket noi dinh %d-%d\n",v1,v2);
+  //printf("(*graph).matrix[v1][v2]= %d\n", (*graph).matrix[v1][v2]);
 }
 
 /*int getConnectedVertices(Graph* graph, int vertex, int output){ // return số các đỉnh liên thông

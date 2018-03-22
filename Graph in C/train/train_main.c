@@ -4,7 +4,8 @@
 #include "train_graph.h"
 int station=0;
 void read_station(FILE *fptr);//gan cac gia tri dai dien cho cac station
-void read_sys(FILE *fptr, Graph *in_sys);//khoi tao vao nap vao cac mang tau dien ngam
+int read_sys(FILE *fptr, Graph *in_sys);//khoi tao vao nap vao cac mang tau dien ngam
+void search_conn(Graph * in_sys, int search,int sys_num);//tim kiem cac ga noi voi nha ga nay
 
 int main(){
   FILE *fptr;
@@ -16,8 +17,13 @@ int main(){
   read_station(fptr);
   //printf("%d\n",station);
   Graph in_sys[MAX];
-  read_sys(fptr,in_sys);
+  int x=read_sys(fptr,in_sys);
+  printf("%d\n", x);
   fclose(fptr);
+  int search;
+  printf("Nhap vao ten mot nha ga ma ban muon tim:");
+  scanf("%d", &search);
+  search_conn(in_sys,search-1,x);
 }
 
 
@@ -44,7 +50,7 @@ void read_station(FILE *fptr){
   station=temp;
 }
 
-void read_sys(FILE *fptr, Graph *in_sys){
+int read_sys(FILE *fptr, Graph *in_sys){
   int num[station];
   char str1[50];
   char str2[50];
@@ -58,13 +64,13 @@ void read_sys(FILE *fptr, Graph *in_sys){
     do{ //lay cac diem trong mang tau
       fscanf(fptr,"%d",&num[i]);
       c=fgetc(fptr);
-      printf("%d ", num[i]);
+      //printf("%d ", num[i]);
       i++;
     }
     while(c!='\n'&&c!='\0'&&i<=station);
-    printf("\n" );
+    //printf("\n" );
     i--;
-    printf("i = %d j= %d k= %d\n", i,j,k);
+    //printf("i = %d j= %d k= %d\n", i,j,k);
     //printf("Breaked out\n");
     in_sys[j]=createGraph(station);
     while(k<=i){
@@ -74,4 +80,12 @@ void read_sys(FILE *fptr, Graph *in_sys){
     }
     j++;
   }
+  return j;
+}
+
+void search_conn(Graph * in_sys, int search, int sys_num){
+  int i=0,j=0;
+  for(i=0; i<sys_num; i++)
+    for(j=0;j<station;j++)
+      if(in_sys[i].matrix[search][j]==1 && search!=j) printf("Nha ga so S%d o he thong %d duoc ket noi voi nha ga S%d\n", j+1,i+1,search+1);
 }
