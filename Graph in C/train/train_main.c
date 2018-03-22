@@ -15,7 +15,7 @@ int main(){
   }
   read_station(fptr);
   //printf("%d\n",station);
-  Graph *in_sys;
+  Graph in_sys[MAX];
   read_sys(fptr,in_sys);
   fclose(fptr);
 }
@@ -49,23 +49,29 @@ void read_sys(FILE *fptr, Graph *in_sys){
   char str1[50];
   char str2[50];
   char c;
-  int j=1,k=1,l=1;
+  int j=0,k=0,l=0;
   while(!feof(fptr)){
-    int i=1;
+    k=0;
+    int i=0;
     fscanf(fptr,"%s %s ",str1,str2);
     if(feof(fptr)) break;
     do{ //lay cac diem trong mang tau
       fscanf(fptr,"%d",&num[i]);
       c=fgetc(fptr);
-      printf("%d %c\n", num[i],c);
+      printf("%d ", num[i]);
       i++;
     }
     while(c!='\n'&&c!='\0'&&i<=station);
-    printf("Breaked out\n");
+    printf("\n" );
+    i--;
+    printf("i = %d j= %d k= %d\n", i,j,k);
+    //printf("Breaked out\n");
     in_sys[j]=createGraph(station);
     while(k<=i){
       for(l=1 ;l<=(i-k);l++)
-      connected(&in_sys[j],k,k+l);
+        connected(&in_sys[j],num[k],num[k+l]);
+      k++;
     }
+    j++;
   }
 }

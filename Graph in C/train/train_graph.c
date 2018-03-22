@@ -6,6 +6,8 @@
 Graph createGraph(int size){ //khoi tao ma tran
   Graph new;
   new.sizemax=size;
+  setEdge(&new,size);
+  printf("Tao do thi moi thanh cong\n");
   return new;
 }
 
@@ -13,7 +15,7 @@ void setEdge(Graph* graph,int v1){ //thiet lap he thong ban dau
   int i,j,x,y;
   for(x = 1 ; x <= v1 ; x++) //setup toan bo he thong ve so 0
     for(y = 1 ; y <= v1 ; y++) (*graph).matrix[x][y]=0;
-  for(x =1; x<= v1 ; x++) (*graph).matrix[x][x]=0; //moi diem deu connect voi chinh no
+  for(x =1; x<= v1 ; x++) (*graph).matrix[x][x]=1; //moi diem deu connect voi chinh no
 }
 
 void connected(Graph* graph, int v1, int v2){ //ket noi cac mang tau

@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#define MAX 20
 typedef struct{
-  int **matrix;
+  int matrix[MAX][MAX];
   int sizemax;
 } Graph;
 Graph createGraph(int size); //khoi tao ma tran
