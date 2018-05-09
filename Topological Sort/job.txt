@@ -1,0 +1,10 @@
+S0=CTDL
+S1=KTMT
+S2=HDH
+S3=CAdvance
+S4=TRR
+S5=PGSTS
+S6=CBasic
+S7=TS
+S8=OOP
+S9=CIntro

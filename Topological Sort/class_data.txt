@@ -1,0 +1,13 @@
+[ClassList]
+C1 = C-basic
+C0 = C-intro
+C2 = C-advanced
+S0 = He-dieu-hanh
+M0 = Toan-roi-rac
+D0 = Cau-truc-du-lieu-giai-thuat
+D1 = Ki-thuat-phan-mem
+[ClassOrder]
+C0 -> C1
+D0 -> C1
+C1 -> C2
+M0 -> C2
