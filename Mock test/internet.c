@@ -58,7 +58,7 @@ char* get_vertex_name(JRB j,int id){ /*tim ten theo id*/
   return(g->name);
 }
 void init_road(road arr[],int num,char x[],int id){ //khoi tao duong di
-  strcmp(arr[num].name,x);
+  strcpy(arr[num].name,x);
   arr[num].id=id;
   arr[num].weight=INF;
   arr[num].truoc=-1;
@@ -102,7 +102,7 @@ void FSP(JRB j,road arr[],int ele_count,int pos1,int pos2){ //tim duong ngan nha
   jrb_traverse(rnode,g->edge){
     x=find_pos_arr(arr,ele_count,rnode->key.i);
     if(arr[x].checked ==0){
-      printf("Xet: %d -> %d\n",arr[pos1].id,arr[x].id);
+      //printf("Xet: %d -> %d\n",arr[pos1].id,arr[x].id);
       if(x == pos2){
         if(rnode->val.i + arr[pos1].weight < arr[x].weight){
           arr[pos2].weight = rnode->val.i + arr[pos1].weight;
@@ -135,6 +135,7 @@ void print_path(road arr[],int ele_count,int pos1, int pos2){ //in ra do dai va 
     count ++;
   }
   while(x != pos2&&count<=ele_count);
+  printf("%d %s\n",arr[pos2].id, arr[pos2].name);
 }
 int id_comp(int id,int arr[],int num){
   for(int i=0;i<num;i++) if(arr[i]==id) return 1;
