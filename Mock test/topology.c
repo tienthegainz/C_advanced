@@ -10,6 +10,7 @@ typedef struct{ //luu vao trong cay JRB
   char name[MAX];
   int deg;
   JRB edge;
+  int checked;
 } data;
 typedef struct{ //luu duong di ngan nhat
   char name[MAX];
@@ -19,20 +20,20 @@ typedef struct{ //luu duong di ngan nhat
   int sau;
   int checked;
 }road;
-typedef struct{ //luu cac gia tri binh thuong
-  int id1;
-  int id2;
-  int weight;
-}rel;
+typedef struct{
+  int id;
+  char name[MAX];
+} info;
 
 data* init_struct(char name[]){ //khoi tao cay con nho
   data *g = (data *) malloc(sizeof(data));
   strcpy(g->name,name);
   g->deg=0;
+  g->checked = 0;
   g->edge=make_jrb();
   return g;
 }
-void add_edge(JRB g, int id1, int id2, int weight){ /* them canh vao vo huong*/
+void add_edge(JRB g, int id1, int id2, int weight){ /* them canh co huong*/
   JRB rnode;
   rnode = jrb_find_int(g,id1);
   if(rnode==NULL){
@@ -41,14 +42,6 @@ void add_edge(JRB g, int id1, int id2, int weight){ /* them canh vao vo huong*/
   }
   data *j = (data*) (rnode->val.v);
   jrb_insert_int(j->edge,id2,new_jval_i(weight));
-  j->deg++;
-  rnode = jrb_find_int(g,id2);
-  if(rnode==NULL){
-    printf("Can't find ID2\n");
-    return;
-  }
-  j = (data*) (rnode->val.v);
-  jrb_insert_int(j->edge,id1,new_jval_i(weight));
   j->deg++;
 }
 char* get_vertex_name(JRB j,int id){ /*tim ten theo id*/
@@ -137,15 +130,21 @@ void print_path(road arr[],int ele_count,int pos1, int pos2){ //in ra do dai va 
   while(x != pos2&&count<=ele_count);
   printf("%d %s\n",arr[pos2].id, arr[pos2].name);
 }
-int id_comp(int id,int arr[],int num){
-  for(int i=0;i<num;i++) if(arr[i]==id) return 1;
-  return 0;
-}
-void print_edge(rel arr[],int count){
-  printf("%d\n", count);
-  for(int i=0;i<count;i++){
-    printf("%d %d %d\n",arr[i].id1,arr[i].id2,arr[i].weight );
+void TPS(JRB j,JRB cur,info arr[],int *count){
+  data *g = (data *) (cur->val.v);
+  g->checked =1;
+  JRB rnode,rnode1;
+  jrb_traverse(rnode,g->edge){
+    rnode1 = jrb_find_int(j,rnode->key.i);
+    data *g1 = (data *) (rnode1->val.v);
+    if(g1->checked == 0) TPS(j,rnode1,arr,count);
   }
+  arr[*count].id = cur->key.i;
+  strcpy(arr[*count].name,g->name);
+  *count = *count +1;
+}
+void print_TP(info arr[],int count){
+  for(int i=count-1;i>=0;i--) printf("%d %s\n",arr[i].id,arr[i].name);
 }
 
 int main(int argc, char const *argv[]) {
@@ -153,11 +152,11 @@ int main(int argc, char const *argv[]) {
     fprintf(stderr, "No command\n");
     exit(1);
   }
-  if(strcmp(argv[1],"-h")==0){
-    printf("C-advanced 2015\n");
+  if(strcmp(argv[1],"-about")==0){
+    printf("Chao Tien xau giai\n");
     return 0;
   }
-  else if(strcmp(argv[1],"-v")==0){
+  else if(strcmp(argv[1],"-book")==0){
     IS is;
     is = new_inputstruct(argv[2]);
     if (is == NULL) { perror(argv[2]); exit(1); };
@@ -173,7 +172,7 @@ int main(int argc, char const *argv[]) {
     }
     return 0;
   }
-  else if(strcmp(argv[1],"-w")==0){
+  else if(strcmp(argv[1],"-must")==0){
     if (argc <= 1) {
       fprintf(stderr, "No command\n");
       exit(1);
@@ -203,75 +202,24 @@ int main(int argc, char const *argv[]) {
     x = atoi(is->fields[0]);
     while(x>0){
       get_line(is);
-      add_edge(line,atoi(is->fields[0]),atoi(is->fields[1]),atoi(is->fields[2]));
+      add_edge(line,atoi(is->fields[1]),atoi(is->fields[0]),atoi(is->fields[2]));
       x--;
     }
     jettison_inputstruct(is);
-    int id1 = atoi(argv[3]);
-    int id2 = atoi(argv[4]);
-    rnode=jrb_find_int(line,id1);
-    if(rnode == NULL){
-      printf("Can't find this ID\n" );
-      return -1;
+    int id = atoi(argv[3]);
+    rnode = jrb_find_int(line,id);
+    if(rnode==NULL){
+      printf("Khong co sach tren\n");
+      return 0;
     }
-    data *g = (data*) (rnode->val.v);
+    printf("Truoc khi hoc sach %s can hoc:\n",get_vertex_name(line,id));
+    data *g = (data *)(rnode->val.v);
     jrb_traverse(rnode,g->edge){
-        if(rnode->key.i == id2) {
-          printf("%d\n",rnode->val.i);
-          return 0;
-        }
-    }
-    printf("-1\n");
-    return 0;
-  }
-  else if(strcmp(argv[1],"-n")==0){
-    if (argc <= 1) {
-      fprintf(stderr, "No command\n");
-      exit(1);
-    }
-    IS is;
-    is = new_inputstruct(argv[2]);
-    if (is == NULL) { perror(argv[2]); exit(1); };
-    JRB line,rnode;
-    line=make_jrb();
-    /*doc file:
-    get_line(is);
-    x = atoi(is->fields[0]);
-    while(x>0){
-      get_line(is);
-      do_something;
-      x--;
-    }
-    */
-    get_line(is);
-    int x = atoi(is->fields[0]);
-    while(x>0){
-      get_line(is);
-      jrb_insert_int(line,atoi(is->fields[0]),new_jval_v(init_struct(is->fields[1])));
-      x--;
-    }
-    get_line(is);
-    x = atoi(is->fields[0]);
-    while(x>0){
-      get_line(is);
-      add_edge(line,atoi(is->fields[0]),atoi(is->fields[1]),atoi(is->fields[2]));
-      x--;
-    }
-    jettison_inputstruct(is);
-    int id1 = atoi(argv[3]);
-    rnode=jrb_find_int(line,id1);
-    if(rnode == NULL){
-      printf("Can't find this ID\n" );
-      return -1;
-    }
-    data *g = (data*) (rnode->val.v);
-    printf("%d\n",g->deg);
-    jrb_traverse(rnode,g->edge){
-        printf("%d %s %d\n",rnode->key.i,get_vertex_name(line,rnode->key.i),rnode->val.i);
+      printf("%s\n", get_vertex_name(line,rnode->key.i));
     }
     return 0;
   }
-  else if(strcmp(argv[1],"-p")==0){
+  else if(strcmp(argv[1],"-rel")==0){
     if (argc <= 1) {
       fprintf(stderr, "No command\n");
       exit(1);
@@ -302,13 +250,13 @@ int main(int argc, char const *argv[]) {
       add_edge(line,atoi(is->fields[0]),atoi(is->fields[1]),atoi(is->fields[2]));
       x--;
     }
+    jettison_inputstruct(is);
     clear_arr(arr,ele_count,find_pos_arr(arr,ele_count,id1));/*shortest B3*/
     FSP(line,arr,ele_count,find_pos_arr(arr,ele_count,id1),find_pos_arr(arr,ele_count,id2));/*shortest B4*/
     print_path(arr,ele_count,find_pos_arr(arr,ele_count,id1),find_pos_arr(arr,ele_count,id2));/*shortest B5*/
-    jettison_inputstruct(is);
     return 0;
   }
-  else if(strcmp(argv[1],"-s")==0){
+  else if(strcmp(argv[1],"-order")==0){
     if (argc <= 1) {
       fprintf(stderr, "No command\n");
       exit(1);
@@ -316,42 +264,30 @@ int main(int argc, char const *argv[]) {
     IS is;
     is = new_inputstruct(argv[2]);
     if (is == NULL) { perror(argv[2]); exit(1); };
-    JRB line;
+    JRB line,rnode;
     line=make_jrb();
-    int num_vertex=argc-3;
-    int id[num_vertex];
-    for(int a=0;a<num_vertex;a++)
-      id[a]=atoi(argv[a+3]);
     get_line(is);
     int x = atoi(is->fields[0]);
-    printf("%d\n", num_vertex);
     while(x>0){
       get_line(is);
-      int y = atoi(is->fields[0]);
-      if(id_comp(y,id,num_vertex)){
-        for(int i=0;i<is->NF;i++) printf("%s ",is->fields[i]);
-        printf("\n");
-      }
+      jrb_insert_int(line,atoi(is->fields[0]),new_jval_v(init_struct(is->fields[1])));
       x--;
     }
-    rel arr[MAX];
-    int count=0;
     get_line(is);
     x = atoi(is->fields[0]);
     while(x>0){
       get_line(is);
-      int y = atoi(is->fields[0]);
-      int z = atoi(is->fields[1]);
-      if(id_comp(y,id,num_vertex)&&id_comp(z,id,num_vertex)){
-        arr[count].id1=y;
-        arr[count].id2=z;
-        arr[count].weight=atoi(is->fields[2]);
-        count++;
-      }
+      add_edge(line,atoi(is->fields[0]),atoi(is->fields[1]),atoi(is->fields[2]));
       x--;
     }
-    print_edge(arr,count);
     jettison_inputstruct(is);
+    info arr[MAX];
+    int count=0;
+    jrb_traverse(rnode,line){
+      data * g = (data*) (rnode->val.v);
+      if(g->checked == 0) TPS(line,rnode,arr,&count);
+    }
+    print_TP(arr,count);
     return 0;
   }
 }

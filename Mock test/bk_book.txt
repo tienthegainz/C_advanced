@@ -1,0 +1,12 @@
+5
+1 CTDL-GT
+2 ToanRoiRac
+3 HeDieuHanh
+4 CoSoDuLieu
+5 TriTueNhanTao
+5
+1 2 3
+1 4 2
+2 5 6
+3 4 2
+4 5 6
